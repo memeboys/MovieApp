@@ -3,5 +3,5 @@
   grid-template-columns: repeat(auto-fit, 450px);
   justify-content: center;
   row-gap: 2rem;
-  column-gap: 2rem;
+  column-gap: 3rem;
 }
