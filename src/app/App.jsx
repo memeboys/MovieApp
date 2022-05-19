@@ -1,12 +1,12 @@
+import { Spin } from 'antd';
 import React from 'react';
 import { Offline, Online } from 'react-detect-offline';
-import { Spin } from 'antd';
-import Movies from '../Movies/Movies';
-import './App.css';
-import '../Movies/Movies.css';
-import '../Movie/Movie.css';
 import ErrorIndicator from '../ErrorIndicator/ErrorIndicator';
+import '../Movie/Movie.css';
+import Movies from '../Movies/Movies';
+import '../Movies/Movies.css';
 import WarningIndicator from '../WarningIndicator/WarningIndicator';
+import './App.css';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -17,30 +17,34 @@ export default class App extends React.Component {
       error: false,
     };
   }
+
   async componentDidMount() {
+    await this.presentTrendingMovies();
+  }
+
+  async presentTrendingMovies() {
     try {
-      const response = await fetch(
-        'https://api.themoviedb.org/3/trending/movie/week?api_key=ca57099477a2c0925544b12050bcc9d6'
-      );
-      if (!response.ok) {
-        const messageError = 'Error with Status code: ' + response.status;
-        this.setState({ error: true, errorDescription: messageError });
-        throw new Error(messageError);
-      }
-      let movie = await response.json();
+      const movie = await this.fetchTrendingMovies();
       this.setState({ data: movie.results, isLoading: false });
-      if (movie.length === 0 || movie === []) {
-        const messageError = 'JSON FORMAT ERROR';
-        this.setState({ error: true, errorDescription: messageError });
-        throw new Error(messageError);
-      }
     } catch (error) {
-      console.log(error);
+      this.setState({ error: true, errorDescription: error.message });
+      console.error(error);
     }
   }
+
+  async fetchTrendingMovies() {
+    const response = await fetch(
+      'https://api.themoviedb.org/3/trending/movie/week?api_key=ca57099477a2c0925544b12050bcc9d6'
+    );
+    if (!response.ok) {
+      const messageError = 'Error with Status code: ' + response.status;
+      throw new Error(messageError);
+    }
+    return response.json();
+  }
+
   render() {
     const { data, error, errorDescription, isLoading } = this.state;
-    console.log('render');
     return (
       <div className="container">
         <Online>
@@ -49,6 +53,7 @@ export default class App extends React.Component {
         </Online>
         <Offline>
           <WarningIndicator />
+          <div className="content">{isLoading ? <Spin size="large" /> : <Movies movies={data} />}</div>
         </Offline>
       </div>
     );
