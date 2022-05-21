@@ -2,10 +2,12 @@ import { Spin } from 'antd';
 import React from 'react';
 import { Offline, Online } from 'react-detect-offline';
 import ErrorIndicator from '../ErrorIndicator/ErrorIndicator';
-import Movies from '../Movies/Movies';
-import WarningIndicator from '../WarningIndicator/WarningIndicator';
-import './App.css';
 import Header from '../Header/Header';
+import Movies from '../Movies/Movies';
+import Footer from '../Footer/Footer';
+import WarningIndicator from '../WarningIndicator/WarningIndicator';
+
+import './App.css';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -66,6 +68,7 @@ export default class App extends React.Component {
           {error ? <ErrorIndicator description={errorDescription} /> : null}
           <Header searchMovie={this.handlerSearchMovie} />
           <div className="content">{isLoading ? <Spin size="large" /> : <Movies movies={movies} />}</div>
+          <Footer />
         </Online>
         <Offline>
           <WarningIndicator />
