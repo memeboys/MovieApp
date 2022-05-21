@@ -1,5 +1,6 @@
 import React from 'react';
 import './SearchForm.css';
+import { debounce } from 'lodash';
 export default class SearchForm extends React.Component {
   constructor(props) {
     super(props);
@@ -11,10 +12,12 @@ export default class SearchForm extends React.Component {
   onChange(e) {
     this.setState({ value: e.target.value });
     let res = e.target.value.trim();
+    const debounces = debounce(this.props.searchMovie, 1000);
     if (res === '') {
-      return (res = 'return');
+      res = 'return';
+      debounces(res);
     } else {
-      this.props.searchMovie(res);
+      debounces(res);
     }
   }
   render() {
