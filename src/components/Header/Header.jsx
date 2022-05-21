@@ -10,7 +10,7 @@ export default class Header extends React.Component {
           <button className="pagination-btn-1 pagination__item pagination__item--active">Search</button>
           <button className="pagination-btn-2 pagination__item ">Rated</button>
         </div>
-        <SearchForm />
+        <SearchForm searchMovie={this.props.searchMovie} />
       </header>
     );
   }

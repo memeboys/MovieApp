@@ -7,15 +7,7 @@ export default class Movies extends React.Component {
     return (
       <div className="movies">
         {this.props.movies.map((movie) => {
-          return (
-            <Movie
-              key={movie.id}
-              img={movie.poster_path}
-              title={movie.title}
-              release_date={movie.release_date}
-              overview={movie.overview}
-            />
-          );
+          return <Movie key={movie.id} movie={movie} />;
         })}
       </div>
     );
