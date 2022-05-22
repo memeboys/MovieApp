@@ -22,7 +22,7 @@ export default class Footer extends React.Component {
         className="footer"
         current={this.props.page > 1 ? this.state.current : this.props.page}
         onChange={this.onChange}
-        total={50}
+        total={this.props.total}
       />
     );
   }

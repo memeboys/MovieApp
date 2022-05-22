@@ -26,8 +26,8 @@ export default class App extends React.Component {
   }
   async presentTrendingMovies() {
     try {
-      const movie = await this.fetchTrendingMovies();
-      this.setState({ movies: movie.results, isLoading: false, value: 'return' });
+      const movies = await this.fetchTrendingMovies();
+      this.setState({ movies: movies.results, isLoading: false, value: 'return', total: movies.total_pages });
     } catch (error) {
       this.setState({ error: true, errorDescription: error.message });
       console.error(error);
@@ -56,7 +56,7 @@ export default class App extends React.Component {
         throw new Error(messageError);
       }
       const movies = await response.json();
-      this.setState({ movies: movies.results, isLoading: false, value: query });
+      this.setState({ movies: movies.results, isLoading: false, value: query, total: movies.total_pages });
     } catch (error) {
       this.setState({ error: true, errorDescription: error.message });
       console.error(error);
@@ -73,7 +73,7 @@ export default class App extends React.Component {
         throw new Error(messageError);
       }
       const movies = await response.json();
-      this.setState({ movies: movies.results, isLoading: false, currentPage: pageNumber });
+      this.setState({ movies: movies.results, isLoading: false, currentPage: pageNumber, total: movies.total_pages });
     } catch (error) {
       this.setState({ error: true, errorDescription: error.message });
       console.error(error);
@@ -81,14 +81,14 @@ export default class App extends React.Component {
   }
   render() {
     console.log('render');
-    const { movies, error, errorDescription, isLoading, value, currentPage } = this.state;
+    const { movies, error, errorDescription, isLoading, value, currentPage, total } = this.state;
     return (
       <div className="container">
         <Online>
           {error ? <ErrorIndicator description={errorDescription} /> : null}
           <Header searchMovie={this.handlerSearchMovie} />
           <div className="content">{isLoading ? <Spin size="large" /> : <Movies movies={movies} />}</div>
-          <Footer paginationPage={this.nextPage} value={value} page={currentPage} />
+          <Footer paginationPage={this.nextPage} value={value} page={currentPage} total={total} />
         </Online>
         <Offline>
           <WarningIndicator />
