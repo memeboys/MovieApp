@@ -10,13 +10,20 @@ export default class App extends React.Component {
     };
     this.onChange = this.onChange.bind(this);
   }
-  onChange(page) {
-    console.log(page);
+  onChange(e) {
     this.setState({
-      current: page,
+      current: e,
     });
+    this.props.paginationPage(e, this.props.value);
   }
   render() {
-    return <Pagination className="footer" current={this.state.current} onChange={this.onChange} total={50} />;
+    return (
+      <Pagination
+        className="footer"
+        current={this.props.page > 1 ? this.state.current : this.props.page}
+        onChange={this.onChange}
+        total={50}
+      />
+    );
   }
 }
