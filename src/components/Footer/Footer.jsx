@@ -2,7 +2,7 @@ import React from 'react';
 import { Pagination } from 'antd';
 import './Footer.css';
 
-export default class App extends React.Component {
+export default class Footer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
