@@ -1,100 +1,108 @@
-import { Spin } from 'antd';
+import { Spin, Tabs } from 'antd';
 import React from 'react';
-import { Offline, Online } from 'react-detect-offline';
-import ErrorIndicator from '../ErrorIndicator/ErrorIndicator';
-import Header from '../Header/Header';
-import Movies from '../Movies/Movies';
-import Footer from '../Footer/Footer';
-import WarningIndicator from '../WarningIndicator/WarningIndicator';
-
+import { Offline } from 'react-detect-offline';
+import RatedPage from '../RatedPage';
+import SearchPage from '../SearchPage';
+import { GenresContext } from '../shared/Genres';
+import OfflineWarning from '../shared/OfflineWarning';
 import './App.css';
-
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      movies: [],
+      genresList: [],
+      userRates: {},
+      guestSessionId: null,
       isLoading: true,
-      error: false,
-      currentPage: 1,
     };
-    this.handlerSearchMovie = this.handlerSearchMovie.bind(this);
-    this.nextPage = this.nextPage.bind(this);
+    this.baseURL = 'https://api.themoviedb.org/3';
+    this.apiKey = 'ca57099477a2c0925544b12050bcc9d6';
+    this.handleMovieRate = this.handleMovieRate.bind(this);
   }
+
   async componentDidMount() {
-    await this.presentTrendingMovies();
+    await Promise.all([this.startGuestSession(), this.fetchGenres()]);
+    this.setState({ isLoading: false });
   }
-  async presentTrendingMovies() {
-    try {
-      const movies = await this.fetchTrendingMovies();
-      this.setState({ movies: movies.results, isLoading: false, value: 'return', total: movies.total_pages });
-    } catch (error) {
-      this.setState({ error: true, errorDescription: error.message });
-      console.error(error);
+
+  async startGuestSession() {
+    const guestUrl = `${this.baseURL}/authentication/guest_session/new?api_key=${this.apiKey}`;
+    const response = await fetch(guestUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to load genre list with status: ${response.status}`);
+    }
+    const guestSession = await response.json();
+    this.setState({ guestSessionId: guestSession.guest_session_id });
+  }
+
+  async fetchGenres() {
+    const genresUrl = `${this.baseURL}/genre/movie/list?api_key=${this.apiKey}`;
+    const response = await fetch(genresUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to load genre list with status: ${response.status}`);
+    }
+    const genres = await response.json();
+    this.setState({ genresList: genres.genres });
+  }
+
+  async handleMovieRate(movie, rate) {
+    this.setState({
+      userRates: { ...this.state.userRates, [movie.id]: rate },
+    });
+    if (rate > 0) {
+      const url = new URL(`
+      ${this.baseURL}/movie/${movie.id}/rating?api_key=${this.apiKey}&guest_session_id=${this.state.guestSessionId}`);
+      const body = {
+        value: rate,
+      };
+      const headers = {
+        'Content-Type': 'application/json;charset=utf-8',
+      };
+      return await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: headers,
+      }).catch((e) => {
+        console.log(e);
+      });
+    }
+    if (rate === 0) {
+      const url = new URL(`
+      ${this.baseURL}/movie/${movie.id}/rating?api_key=${this.apiKey}&guest_session_id=${this.state.guestSessionId}`);
+      return await fetch(url, {
+        method: 'DELETE',
+      }).catch((e) => {
+        console.log(e);
+      });
     }
   }
 
-  async fetchTrendingMovies() {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/search/movie?api_key=ca57099477a2c0925544b12050bcc9d6&query=return&page=${this.state.currentPage}`
-    );
-    if (!response.ok) {
-      const messageError = 'Error with Status code: ' + response.status;
-      throw new Error(messageError);
-    }
-    return response.json();
-  }
-  async handlerSearchMovie(updateValue) {
-    this.setState({ isLoading: true, currentPage: 1 });
-    const query = updateValue === '' ? 'return' : encodeURIComponent(updateValue);
-    try {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=ca57099477a2c0925544b12050bcc9d6&query=${query}`
-      );
-      if (!response.ok) {
-        const messageError = 'Error with Status code: ' + response.status;
-        throw new Error(messageError);
-      }
-      const movies = await response.json();
-      this.setState({ movies: movies.results, isLoading: false, value: query, total: movies.total_pages });
-    } catch (error) {
-      this.setState({ error: true, errorDescription: error.message });
-      console.error(error);
-    }
-  }
-  async nextPage(pageNumber, value) {
-    this.setState({ isLoading: true });
-    try {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=ca57099477a2c0925544b12050bcc9d6&query=${value}&page=${pageNumber}`
-      );
-      if (!response.ok) {
-        const messageError = 'Error with Status code: ' + response.status;
-        throw new Error(messageError);
-      }
-      const movies = await response.json();
-      this.setState({ movies: movies.results, isLoading: false, currentPage: pageNumber, total: movies.total_pages });
-    } catch (error) {
-      this.setState({ error: true, errorDescription: error.message });
-      console.error(error);
-    }
-  }
   render() {
-    console.log('render');
-    const { movies, error, errorDescription, isLoading, value, currentPage, total } = this.state;
+    console.log(this.state.guestSessionId);
     return (
-      <div className="container">
-        <Online>
-          {error ? <ErrorIndicator description={errorDescription} /> : null}
-          <Header searchMovie={this.handlerSearchMovie} />
-          <div className="content">{isLoading ? <Spin size="large" /> : <Movies movies={movies} />}</div>
-          <Footer paginationPage={this.nextPage} value={value} page={currentPage} total={total} />
-        </Online>
+      <GenresContext.Provider value={this.state.genresList}>
         <Offline>
-          <WarningIndicator />
-          <div className="content">{isLoading ? <Spin size="large" /> : <Movies movies={movies} />}</div>
+          <OfflineWarning />
         </Offline>
-      </div>
+        {this.state.isLoading ? (
+          <Spin size="large" />
+        ) : (
+          <div className="container">
+            <Tabs centered={true} destroyInactiveTabPane={true}>
+              <Tabs.TabPane tab="Search" key="search">
+                <SearchPage onMovieRate={this.handleMovieRate} userRates={this.state.userRates} />
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="Rated" key="rated">
+                <RatedPage
+                  guestSessionId={this.state.guestSessionId}
+                  userRates={this.state.userRates}
+                  onMovieRate={this.handleMovieRate}
+                />
+              </Tabs.TabPane>
+            </Tabs>
+          </div>
+        )}
+      </GenresContext.Provider>
     );
   }
 }
