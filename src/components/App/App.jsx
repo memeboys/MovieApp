@@ -1,8 +1,9 @@
 import { Spin, Tabs } from 'antd';
 import React from 'react';
 import { Offline } from 'react-detect-offline';
-import RatedPage from '../RatedPage';
-import SearchPage from '../SearchPage';
+import RatedPage from '../RatedPage/RatedPage';
+import SearchPage from '../SearchPage/SearchPage';
+import ErrorIndicator from '../shared/ErrorIndicator';
 import { GenresContext } from '../shared/Genres';
 import OfflineWarning from '../shared/OfflineWarning';
 import './App.css';
@@ -19,7 +20,10 @@ export default class App extends React.Component {
     this.apiKey = 'ca57099477a2c0925544b12050bcc9d6';
     this.handleMovieRate = this.handleMovieRate.bind(this);
   }
-
+  async componentDidCatch(errorString, errorInfo) {
+    this.setState({ error: errorString });
+    console.log(errorInfo);
+  }
   async componentDidMount() {
     await Promise.all([this.startGuestSession(), this.fetchGenres()]);
     this.setState({ isLoading: false });
@@ -29,6 +33,7 @@ export default class App extends React.Component {
     const guestUrl = `${this.baseURL}/authentication/guest_session/new?api_key=${this.apiKey}`;
     const response = await fetch(guestUrl);
     if (!response.ok) {
+      this.setState({ error: response.status });
       throw new Error(`Failed to load genre list with status: ${response.status}`);
     }
     const guestSession = await response.json();
@@ -39,6 +44,7 @@ export default class App extends React.Component {
     const genresUrl = `${this.baseURL}/genre/movie/list?api_key=${this.apiKey}`;
     const response = await fetch(genresUrl);
     if (!response.ok) {
+      this.setState({ error: response.status });
       throw new Error(`Failed to load genre list with status: ${response.status}`);
     }
     const genres = await response.json();
@@ -63,7 +69,7 @@ export default class App extends React.Component {
         body: JSON.stringify(body),
         headers: headers,
       }).catch((e) => {
-        console.log(e);
+        this.setState({ error: e.message });
       });
     }
     if (rate === 0) {
@@ -72,13 +78,13 @@ export default class App extends React.Component {
       return await fetch(url, {
         method: 'DELETE',
       }).catch((e) => {
-        console.log(e);
+        this.setState({ error: e.message });
       });
     }
   }
 
   render() {
-    console.log(this.state.guestSessionId);
+    if (this.state.error) return <ErrorIndicator description={this.state.error} />;
     return (
       <GenresContext.Provider value={this.state.genresList}>
         <Offline>

@@ -1,7 +1,8 @@
 import { Spin } from 'antd';
 import React from 'react';
-import Footer from './Footer/Footer';
-import Movies from './Movies/Movies';
+import Footer from '../Footer/Footer';
+import Movies from '../Movies/Movies';
+import ErrorIndicator from '../shared/ErrorIndicator';
 
 export default class RatedPage extends React.Component {
   constructor(props) {
@@ -16,7 +17,10 @@ export default class RatedPage extends React.Component {
     this.apiKey = 'ca57099477a2c0925544b12050bcc9d6';
     this.guestSessionId = this.props.guestSessionId;
   }
-
+  async componentDidCatch(errorString, errorInfo) {
+    this.setState({ error: errorString });
+    console.log(errorInfo);
+  }
   async componentDidMount() {
     await this.fetchMovies(this.state.currentPage);
   }
@@ -27,6 +31,7 @@ export default class RatedPage extends React.Component {
       `https://api.themoviedb.org/3/guest_session/${this.guestSessionId}/rated/movies?api_key=${this.apiKey}&sort_by=created_at.asc`
     );
     if (!response.ok) {
+      this.setState({ error: 'No movies rated!' });
       throw new Error(`Error with Status code: ${response.status}`);
     }
     const movies = await response.json();
@@ -39,20 +44,16 @@ export default class RatedPage extends React.Component {
   }
 
   render() {
-    console.log(this.props.guestSessionId);
+    if (this.state.error) return <ErrorIndicator description={this.state.error} />;
     if (this.state.isLoading) {
       return <Spin size="large" />;
     }
-    const content =
-      this.state.movies.length === 0 ? (
-        <p>No movies rated!</p>
-      ) : (
-        <Movies movies={this.state.movies} userRates={this.props.userRates} onMovieRate={this.props.onMovieRate} />
-      );
     return (
       <>
         <main>
-          <div className="content">{content}</div>
+          <div className="content">
+            <Movies movies={this.state.movies} userRates={this.props.userRates} onMovieRate={this.props.onMovieRate} />
+          </div>
         </main>
         <Footer
           currentPage={this.state.currentPage}

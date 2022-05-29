@@ -1,9 +1,10 @@
 import { Spin } from 'antd';
 import { debounce } from 'lodash';
 import React from 'react';
-import Footer from './Footer/Footer';
-import Movies from './Movies/Movies';
-import SearchForm from './SearchForm/SearchForm';
+import Footer from '../Footer/Footer';
+import Movies from '../Movies/Movies';
+import SearchForm from '../SearchForm/SearchForm';
+import ErrorIndicator from '../shared/ErrorIndicator';
 
 export default class SearchPage extends React.Component {
   constructor(props) {
@@ -20,7 +21,10 @@ export default class SearchPage extends React.Component {
     this.searchMovies = debounce(this.searchMovies, 1000);
     this.handleSearchQueryChange = this.handleSearchQueryChange.bind(this);
   }
-
+  async componentDidCatch(errorString, errorInfo) {
+    this.setState({ error: errorString });
+    console.log(errorInfo);
+  }
   async componentDidMount() {
     await this.fetchMovies(this.state.currentPage, this.state.searchQuery);
   }
@@ -53,23 +57,16 @@ export default class SearchPage extends React.Component {
   }
 
   render() {
+    if (this.state.error) return <ErrorIndicator description={this.state.error} />;
     if (this.state.isLoading) {
       return <Spin size="large" />;
     }
-    const noMoviesFound = this.state.movies.length === 0 ? <p>No movies found!</p> : null;
-    const content =
-      !this.state.isLoading || this.state.movies.length > 0 ? (
-        <Movies movies={this.state.movies} userRates={this.props.userRates} onMovieRate={this.props.onMovieRate} />
-      ) : (
-        noMoviesFound
-      );
     return (
       <>
         <SearchForm searchQuery={this.state.searchQuery} onSearchQueryChange={this.handleSearchQueryChange} />
         <main>
           <div className="content">
-            {noMoviesFound}
-            {content}
+            <Movies movies={this.state.movies} userRates={this.props.userRates} onMovieRate={this.props.onMovieRate} />
           </div>
         </main>
         <Footer

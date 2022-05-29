@@ -89,3 +89,110 @@
   justify-content: space-between;
   height: 100%;
 }
+@media (max-width: 599px) {
+  .movie-card {
+      max-width: 100%;
+  }
+
+  .movie-card img {
+      width: 60px;
+      height: 90px;
+  }
+
+  .movie-card__title {
+      font-size: 14px;
+      max-width: 135px;
+      line-height: normal;
+  }
+
+  .movie-card__head {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      position: relative;
+  }
+
+  .movie-card__head-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-height: 93px;
+  }
+
+  .movie-card__head-rate {
+      right: 5px
+  }
+
+  .movie-card__genre {
+      font-size: 10px;
+  }
+
+  .movie-card__info {
+      display: block;
+      padding: 0.5rem 0.6rem 0.6rem;
+  }
+
+  .movie-card__body-wrapper {
+      height: auto;
+      margin-top: 0.5rem;
+  }
+
+  .movie-card__description {
+      font-size: 12px;
+      margin-bottom: 1rem;
+  }
+
+  .ant-rate {
+      display: flex !important;
+      justify-content: flex-end;
+  }
+
+  .ant-rate-star {
+      font-size: 14px;
+  }
+  
+  
+}
+
+@media (min-width: 760px) and (max-width: 1170px) {
+  .movie-card {
+      max-width: 100%;
+  }
+
+  .ant-rate {
+      display: flex !important;
+      justify-content: flex-end;
+  }
+
+  .ant-rate-star {
+      font-size: 20px;
+  }
+
+  .ant-rate-star:not(:last-child) {
+      margin-right: 6px !important;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 599px) {
+  .movie-card {
+      max-width: 100%;
+  }
+
+  .movie-card img {
+      width: 80px;
+      height: 120px;
+  }
+
+  .movie-card__head {
+      gap: 1rem
+  }
+
+  .movie-card__head-container {
+      gap: 0.5rem;
+      min-height: 120px
+  }
+
+  
+
+}

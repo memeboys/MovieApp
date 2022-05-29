@@ -8,7 +8,8 @@
   font-weight: 500;
   font-size: 16px;
   margin-top: 1.3rem;
-  align-items: center;
+  margin: 0 auto;
+  display: flex;
 }
 
 .header__search::placeholder {
