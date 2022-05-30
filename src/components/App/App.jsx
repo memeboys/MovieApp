@@ -20,10 +20,7 @@ export default class App extends React.Component {
     this.apiKey = 'ca57099477a2c0925544b12050bcc9d6';
     this.handleMovieRate = this.handleMovieRate.bind(this);
   }
-  async componentDidCatch(errorString, errorInfo) {
-    this.setState({ error: errorString });
-    console.log(errorInfo);
-  }
+
   async componentDidMount() {
     await Promise.all([this.startGuestSession(), this.fetchGenres()]);
     this.setState({ isLoading: false });
@@ -84,7 +81,6 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (this.state.error) return <ErrorIndicator description={this.state.error} />;
     return (
       <GenresContext.Provider value={this.state.genresList}>
         <Offline>
@@ -94,6 +90,7 @@ export default class App extends React.Component {
           <Spin size="large" />
         ) : (
           <div className="container">
+            {this.state.error ? <ErrorIndicator description={this.state.error} /> : null}
             <Tabs centered={true} destroyInactiveTabPane={true}>
               <Tabs.TabPane tab="Search" key="search">
                 <SearchPage onMovieRate={this.handleMovieRate} userRates={this.state.userRates} />

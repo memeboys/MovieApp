@@ -21,10 +21,7 @@ export default class SearchPage extends React.Component {
     this.searchMovies = debounce(this.searchMovies, 1000);
     this.handleSearchQueryChange = this.handleSearchQueryChange.bind(this);
   }
-  async componentDidCatch(errorString, errorInfo) {
-    this.setState({ error: errorString });
-    console.log(errorInfo);
-  }
+
   async componentDidMount() {
     await this.fetchMovies(this.state.currentPage, this.state.searchQuery);
   }
@@ -57,14 +54,17 @@ export default class SearchPage extends React.Component {
   }
 
   render() {
-    if (this.state.error) return <ErrorIndicator description={this.state.error} />;
     if (this.state.isLoading) {
       return <Spin size="large" />;
+    }
+    if (this.state.movies.length === 0) {
+      this.setState({ error: 'No movie found' });
     }
     return (
       <>
         <SearchForm searchQuery={this.state.searchQuery} onSearchQueryChange={this.handleSearchQueryChange} />
         <main>
+          {this.state.error ? <ErrorIndicator description={this.state.error} /> : null}
           <div className="content">
             <Movies movies={this.state.movies} userRates={this.props.userRates} onMovieRate={this.props.onMovieRate} />
           </div>

@@ -31,7 +31,6 @@ export default class RatedPage extends React.Component {
       `https://api.themoviedb.org/3/guest_session/${this.guestSessionId}/rated/movies?api_key=${this.apiKey}&sort_by=created_at.asc`
     );
     if (!response.ok) {
-      this.setState({ error: 'No movies rated!' });
       throw new Error(`Error with Status code: ${response.status}`);
     }
     const movies = await response.json();
@@ -44,13 +43,16 @@ export default class RatedPage extends React.Component {
   }
 
   render() {
-    if (this.state.error) return <ErrorIndicator description={this.state.error} />;
     if (this.state.isLoading) {
       return <Spin size="large" />;
+    }
+    if (this.state.movies.length === 0) {
+      this.setState({ error: 'No movie rated' });
     }
     return (
       <>
         <main>
+          {this.state.error ? <ErrorIndicator description={this.state.error} /> : null}
           <div className="content">
             <Movies movies={this.state.movies} userRates={this.props.userRates} onMovieRate={this.props.onMovieRate} />
           </div>
