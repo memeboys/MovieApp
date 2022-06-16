@@ -5,6 +5,7 @@ import Footer from '../Footer/Footer';
 import Movies from '../Movies/Movies';
 import SearchForm from '../SearchForm/SearchForm';
 import ErrorIndicator from '../shared/ErrorIndicator';
+import { fetchSearchMovies } from '../../api/apiService';
 
 export default class SearchPage extends React.Component {
   constructor(props) {
@@ -16,8 +17,6 @@ export default class SearchPage extends React.Component {
       totalPages: 0,
       searchQuery: '',
     };
-    this.baseURL = 'https://api.themoviedb.org/3';
-    this.apiKey = 'ca57099477a2c0925544b12050bcc9d6';
     this.searchMovies = debounce(this.searchMovies, 1000);
     this.handleSearchQueryChange = this.handleSearchQueryChange.bind(this);
   }
@@ -36,15 +35,8 @@ export default class SearchPage extends React.Component {
   }
 
   async fetchMovies(pageNumber, searchQuery) {
-    const query = searchQuery === '' ? 'return' : encodeURIComponent(searchQuery);
     this.setState({ isLoading: true });
-    const response = await fetch(
-      `${this.baseURL}/search/movie?api_key=${this.apiKey}&query=${query}&page=${pageNumber}`
-    );
-    if (!response.ok) {
-      throw new Error(`Error with Status code: ${response.status}`);
-    }
-    const movies = await response.json();
+    const movies = await fetchSearchMovies(pageNumber, searchQuery);
     this.setState({
       movies: movies.results,
       isLoading: false,

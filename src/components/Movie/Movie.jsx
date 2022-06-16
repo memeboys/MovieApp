@@ -23,13 +23,12 @@ export default class Movie extends React.Component {
 
   get ratingColor() {
     const voteAverage = this.props.voteAverage;
-    if (voteAverage >= 7) return 'wonderful';
-    else if (voteAverage >= 5) return 'good';
-    else if (voteAverage >= 3) return 'not-bad';
-    else if (voteAverage > 0) return 'bad';
+    if (voteAverage >= 7) return '#66e900';
+    else if (voteAverage >= 5) return '#e9d100';
+    else if (voteAverage >= 3) return '#e97e00';
+    else if (voteAverage >= 0) return '#e90000';
     return undefined;
   }
-
   render() {
     if (screen.width >= 600) {
       return (
@@ -38,7 +37,9 @@ export default class Movie extends React.Component {
           <div className="movie-card__info">
             <div className="movie-card__head">
               <h2 className="movie-card__title">{this.props.title}</h2>
-              <span className={'movie-card__head-rate' + ' ' + this.ratingColor}>{this.props.voteAverage}</span>
+              <span className={'movie-card__head-rate'} style={{ borderColor: this.ratingColor }}>
+                {this.props.voteAverage}
+              </span>
             </div>
             <span className="movie-card__release-date">{this.formattedReleaseDate}</span>
             <Genres genreIds={this.props.genreIds} />
@@ -57,7 +58,9 @@ export default class Movie extends React.Component {
               <img src={`https://image.tmdb.org/t/p/w200${this.props.posterPath}`}></img>
               <div className="movie-card__head-container">
                 <h2 className="movie-card__title">{this.props.title}</h2>
-                <span className={'movie-card__head-rate' + ' ' + this.ratingColor}>{this.props.voteAverage}</span>
+                <span className={'movie-card__head-rate'} style={{ borderColor: this.ratingColor }}>
+                  {this.props.voteAverage}
+                </span>
                 <span className="movie-card__release-date">{this.formattedReleaseDate}</span>
                 <Genres genreIds={this.props.genreIds} />
               </div>

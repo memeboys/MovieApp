@@ -16,7 +16,7 @@ export default class Movies extends React.Component {
               releaseDate={movie.release_date}
               posterPath={movie.poster_path}
               voteAverage={movie.vote_average}
-              rating={this.props.userRates[movie.id] ?? 0}
+              rating={movie.rating}
               onRate={(rate) => this.props.onMovieRate(movie, rate)}
             />
           );
