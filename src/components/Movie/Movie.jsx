@@ -30,48 +30,24 @@ export default class Movie extends React.Component {
     return undefined;
   }
   render() {
-    if (screen.width >= 600) {
-      return (
-        <div className="movie__card movie-card">
-          <img src={`https://image.tmdb.org/t/p/w200${this.props.posterPath}`}></img>
-          <div className="movie-card__info">
-            <div className="movie-card__head">
-              <h2 className="movie-card__title">{this.props.title}</h2>
-              <span className={'movie-card__head-rate'} style={{ borderColor: this.ratingColor }}>
-                {this.props.voteAverage}
-              </span>
-            </div>
-            <span className="movie-card__release-date">{this.formattedReleaseDate}</span>
-            <Genres genreIds={this.props.genreIds} />
-            <div className="movie-card__body-wrapper">
-              <span className="movie-card__description">{this.shortOverview}</span>
-            </div>
-            <Rate allowHalf defaultValue={this.props.rating} count={10} onChange={this.props.onRate} />
+    return (
+      <div className="movie__card movie-card">
+        <img src={`https://image.tmdb.org/t/p/w200${this.props.posterPath}`}></img>
+        <div className="movie-card__info">
+          <div className="movie-card__head">
+            <h2 className="movie-card__title">{this.props.title}</h2>
+            <span className={'movie-card__head-rate'} style={{ borderColor: this.ratingColor }}>
+              {this.props.voteAverage}
+            </span>
           </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="movie__card movie-card">
-          <div className="movie-card__info">
-            <div className="movie-card__head">
-              <img src={`https://image.tmdb.org/t/p/w200${this.props.posterPath}`}></img>
-              <div className="movie-card__head-container">
-                <h2 className="movie-card__title">{this.props.title}</h2>
-                <span className={'movie-card__head-rate'} style={{ borderColor: this.ratingColor }}>
-                  {this.props.voteAverage}
-                </span>
-                <span className="movie-card__release-date">{this.formattedReleaseDate}</span>
-                <Genres genreIds={this.props.genreIds} />
-              </div>
-            </div>
-            <div className="movie-card__body-wrapper">
-              <span className="movie-card__description">{this.shortOverview}</span>
-              <Rate allowHalf defaultValue={this.props.rating} count={10} onChange={this.props.onRate} />
-            </div>
+          <span className="movie-card__release-date">{this.formattedReleaseDate}</span>
+          <Genres genreIds={this.props.genreIds} />
+          <div className="movie-card__body-wrapper">
+            <span className="movie-card__description">{this.shortOverview}</span>
           </div>
+          <Rate allowHalf defaultValue={this.props.rating} count={10} onChange={this.props.onRate} />
         </div>
-      );
-    }
+      </div>
+    );
   }
 }
