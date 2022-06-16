@@ -1,12 +1,12 @@
 import { Spin, Tabs } from 'antd';
 import React from 'react';
 import { Offline } from 'react-detect-offline';
+import { startGuestSession, fetchGenres, rateMovie } from '../../api/apiService';
 import RatedPage from '../RatedPage/RatedPage';
 import SearchPage from '../SearchPage/SearchPage';
 import ErrorIndicator from '../shared/ErrorIndicator';
 import { GenresContext } from '../shared/Genres';
 import OfflineWarning from '../shared/OfflineWarning';
-import { startGuestSession, fetchGenres, rateMovie } from '../../api/apiService';
 import './App.css';
 export default class App extends React.Component {
   constructor(props) {
@@ -40,13 +40,11 @@ export default class App extends React.Component {
       userRates: { ...this.state.userRates, [movie.id]: rate },
     });
     await rateMovie(movie, rate, this.state.guestSessionId);
-    localStorage.setItem('userRates', JSON.stringify(this.state.userRates));
+    localStorage.setItem(movie.id, rate);
   }
 
   render() {
-    const rating = JSON.parse(localStorage.getItem('userRates'));
-    const ratingUser = this.state.userRates;
-    console.log(rating);
+    console.log(this.state.userRates);
     return (
       <GenresContext.Provider value={this.state.genresList}>
         <Offline>
@@ -62,10 +60,7 @@ export default class App extends React.Component {
                 <SearchPage onMovieRate={this.handleMovieRate} userRates={this.state.userRates} />
               </Tabs.TabPane>
               <Tabs.TabPane tab="Rated" key="rated">
-                <RatedPage
-                  guestSessionId={this.state.guestSessionId}
-                  userRates={ratingUser.length === 0 ? JSON.parse(rating) : ratingUser}
-                />
+                <RatedPage guestSessionId={this.state.guestSessionId} />
               </Tabs.TabPane>
             </Tabs>
           </div>

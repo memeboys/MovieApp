@@ -16,7 +16,7 @@ export default class Movies extends React.Component {
               releaseDate={movie.release_date}
               posterPath={movie.poster_path}
               voteAverage={movie.vote_average}
-              rating={movie.rating}
+              rating={localStorage.getItem([movie.id]) ?? 0}
               onRate={(rate) => this.props.onMovieRate(movie, rate)}
             />
           );

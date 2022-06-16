@@ -41,7 +41,7 @@ export default class RatedPage extends React.Component {
       <>
         <main>
           <div className="content">
-            <Movies movies={this.state.movies} userRates={this.props.userRates} />
+            <Movies movies={this.state.movies} />
           </div>
         </main>
         {this.state.movies.length === 0 ? null : (
