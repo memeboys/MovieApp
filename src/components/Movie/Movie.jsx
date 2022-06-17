@@ -36,16 +36,16 @@ export default class Movie extends React.Component {
         <div className="movie-card__info">
           <div className="movie-card__head">
             <h2 className="movie-card__title">{this.props.title}</h2>
-            <span className={'movie-card__head-rate'} style={{ borderColor: this.ratingColor }}>
+            <div className="movie-card__head-rate" style={{ borderColor: this.ratingColor }}>
               {this.props.voteAverage}
-            </span>
+            </div>
           </div>
           <span className="movie-card__release-date">{this.formattedReleaseDate}</span>
           <Genres genreIds={this.props.genreIds} />
           <div className="movie-card__body-wrapper">
             <span className="movie-card__description">{this.shortOverview}</span>
           </div>
-          <Rate allowHalf defaultValue={this.props.rating} count={10} onChange={this.props.onRate} />
+          <Rate allowHalf value={this.props.rating} count={10} onChange={this.props.onRate} />
         </div>
       </div>
     );
